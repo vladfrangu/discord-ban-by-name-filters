@@ -1,0 +1,42 @@
+{
+	"name": "@tidalgg/reminder-bot",
+	"version": "1.0.0",
+	"description": "Bot for sending reminder messages based on conditions",
+	"main": "dist/main.js",
+	"scripts": {
+		"start": "npm run cleanbuild && node .",
+		"lint": "eslint --fix src --ext ts",
+		"build": "tsc -b src",
+		"cleanbuild": "npx rimraf dist && tsc -b src",
+		"watch": "tsc -b src -w",
+		"dev": "npm run start"
+	},
+	"private": true,
+	"author": "Vlad Frangu <kingdgrizzle@gmail.com>",
+	"license": "MIT",
+	"devDependencies": {
+		"@sapphire/eslint-config": "^4.0.2",
+		"@sapphire/ts-config": "^3.1.3",
+		"@types/fs-extra": "^9.0.13",
+		"@types/node": "^16.11.6",
+		"@typescript-eslint/eslint-plugin": "^5.2.0",
+		"@typescript-eslint/parser": "^5.2.0",
+		"eslint": "^8.1.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"prettier": "^2.4.1",
+		"typescript": "^4.4.4"
+	},
+	"dependencies": {
+		"@sapphire/decorators": "^3.1.3",
+		"@sapphire/discord.js-utilities": "^4.0.2",
+		"@sapphire/framework": "^2.1.3",
+		"@sapphire/plugin-logger": "^2.0.1",
+		"bufferutil": "^4.0.5",
+		"discord.js": "^13.3.0",
+		"fs-extra": "^10.0.0",
+		"tslib": "2.x",
+		"utf-8-validate": "^5.0.7",
+		"zlib-sync": "^0.1.7"
+	}
+}
