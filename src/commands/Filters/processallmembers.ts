@@ -72,6 +72,7 @@ export default class extends Command {
 				type: Constants.MessageComponentTypes.BUTTON,
 				emoji: '🔨',
 				label: 'Ban Members',
+				style: 'SUCCESS',
 				run: async ({ collector, response }) => {
 					collector.stop();
 					await response.edit({ components: [] });
