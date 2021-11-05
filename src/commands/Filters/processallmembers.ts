@@ -205,9 +205,9 @@ export default class extends Command {
 		const bannableChunks = chunk(
 			toBan.map(
 				([member, regex]) =>
-					`${member.user.toString()} - ${Util.escapeMarkdown(member.user.tag)} \`(${member.user.id})\`\n└── Pattern: ${
-						regex.source
-					}`,
+					`${member.user.toString()} - ${Util.escapeMarkdown(member.user.tag)} \`(${
+						member.user.id
+					})\`\n└── Joined at: ${member.joinedAt!.toUTCString()}\n└── Pattern: ${regex.source}`,
 			),
 			10,
 		);
