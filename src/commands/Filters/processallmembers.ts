@@ -215,7 +215,7 @@ export default class extends Command {
 		for (const banChunk of bannableChunks) {
 			paginated.addPageContent(
 				[
-					'Users that have no roles and match filters',
+					'**Users that have no roles and match filters**',
 					'',
 					`- ${banChunk.join('\n- ')}`,
 					'',
@@ -226,9 +226,11 @@ export default class extends Command {
 
 		if (paginated.pages.length === 1) {
 			paginated.addPageContent(
-				['Users that have no roles and match filters', '', `In total, **${toBan.length}** members will be banned`].join(
-					'\n',
-				),
+				[
+					'**Users that have no roles and match filters**',
+					'',
+					`In total, **${toBan.length}** members will be banned`,
+				].join('\n'),
 			);
 		}
 
