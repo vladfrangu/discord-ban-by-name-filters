@@ -131,6 +131,8 @@ export default class extends Command {
 								return;
 							}
 
+							collector.stop('manual');
+
 							// Remove components
 							await button.update({
 								components: [],
@@ -184,6 +186,16 @@ export default class extends Command {
 							await response.channel.send({
 								files: [new MessageAttachment(Buffer.from(finalText), 'ban-report.txt')],
 							});
+						});
+
+						collector.on('end', async (_, reason) => {
+							if (reason !== 'manual') {
+								await signOffMessage.edit({
+									content: 'Ban request timed out',
+									embeds: [],
+									components: [],
+								});
+							}
 						});
 					})();
 				},
