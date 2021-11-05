@@ -127,6 +127,8 @@ export default class extends Command {
 		const toBan: [GuildMember, RegExp][] = [];
 
 		for (const member of members.values()) {
+			if (member.roles.cache.size) continue;
+
 			for (const { regexp } of bannables.values()) {
 				if (regexp.test(member.user.username)) {
 					toBan.push([member, regexp]);
@@ -136,7 +138,7 @@ export default class extends Command {
 		}
 
 		const bannableChunks = chunk(
-			toBan.map(([member]) => `${member.user.tag} \`(${member.user.id})\``),
+			toBan.map(([member, regex]) => `${member.user.tag} \`(${member.user.id})\`\n  - Pattern: ${regex.source}`),
 			10,
 		);
 
