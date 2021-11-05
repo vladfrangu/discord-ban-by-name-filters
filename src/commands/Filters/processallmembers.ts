@@ -127,7 +127,8 @@ export default class extends Command {
 		const toBan: [GuildMember, RegExp][] = [];
 
 		for (const member of members.values()) {
-			if (member.roles.cache.size) continue;
+			// Skip any member with more than 1 role
+			if (member.roles.cache.size > 1) continue;
 
 			for (const { regexp } of bannables.values()) {
 				if (regexp.test(member.user.username)) {
