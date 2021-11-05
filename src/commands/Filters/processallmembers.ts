@@ -82,6 +82,7 @@ export default class extends Command {
 					const failedToBan = [];
 
 					for (const [member, regexp] of toBan) {
+						await response.channel.sendTyping();
 						try {
 							bannedMembers.push(
 								`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
