@@ -178,13 +178,14 @@ export default class extends Command {
 								'',
 								'BANNED IDs',
 								...ids,
-								'',
-								'FAILED TO BAN',
-								...failedToBan,
-							].join('\n');
+							];
+
+							if (failedToBan.length) {
+								finalText.push('', 'FAILED TO BAN', ...failedToBan);
+							}
 
 							await response.channel.send({
-								files: [new MessageAttachment(Buffer.from(finalText), 'ban-report.txt')],
+								files: [new MessageAttachment(Buffer.from(finalText.join('\n')), 'ban-report.txt')],
 							});
 						});
 
