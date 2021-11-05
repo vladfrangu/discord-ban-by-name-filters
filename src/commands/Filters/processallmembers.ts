@@ -145,7 +145,7 @@ export default class extends Command {
 
 		for (const banChunk of bannableChunks) {
 			paginated.addPageEmbed((embed) =>
-				embed.setTitle('Users that will be banned').setDescription(`- ${banChunk.join('\n- ')}`),
+				embed.setTitle('Users that have no roles and match filters').setDescription(`- ${banChunk.join('\n- ')}`),
 			);
 		}
 
