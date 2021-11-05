@@ -15,6 +15,8 @@ const userIds = [
 	'102437975224225792',
 	// Stixil#0897
 	'477956583159234570',
+	// Trophias#0001
+	'85185381837836288',
 ];
 
 export default class extends Precondition {

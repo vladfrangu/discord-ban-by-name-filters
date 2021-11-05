@@ -1,5 +1,5 @@
 {
-	"name": "@tidalgg/reminder-bot",
+	"name": "discord-ban-by-name-filters",
 	"version": "1.0.0",
 	"description": "Bot for sending reminder messages based on conditions",
 	"main": "dist/main.js",

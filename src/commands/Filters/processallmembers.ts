@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions } from '@sapphire/framework';
-import { Constants, GuildMember, Message, MessageAttachment, Util } from 'discord.js';
+import { Command, CommandOptions, isOk } from '@sapphire/framework';
+import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
 import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
@@ -77,48 +77,112 @@ export default class extends Command {
 					collector.stop();
 					await response.edit({ components: [] });
 
-					const bannedMembers = [];
-					const ids = [];
-					const failedToBan = [];
+					void (async () => {
+						const signOffMessage = await response.channel.send({
+							components: [
+								new MessageActionRow().addComponents(
+									new MessageButton().setCustomId('signOff-ban').setStyle('DANGER').setLabel('Sign Off ban'),
+								),
+							],
+							embeds: [
+								createInfoEmbed(
+									this.container.client,
+									'You need 2 more people to sign off this ban. They can click the button below to sign.',
+								),
+							],
+						});
 
-					for (const [member, regexp] of toBan) {
-						await response.channel.sendTyping();
-						try {
-							bannedMembers.push(
-								`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
-							);
-							ids.push(member.user.id);
-							await member.ban({ reason: `Name filter matched: ${regexp.source}` });
-						} catch (err) {
-							this.container.logger.warn('Failed to ban member', err);
-							bannedMembers.pop();
-							ids.pop();
-							failedToBan.push(
-								`FAILED TO BAN: ${member.user.tag}; ID: ${member.user.id}; ERROR: ${(err as Error).message}`,
-							);
-						}
-					}
+						const signedOffBy: string[] = [];
 
-					await response.edit({
-						embeds: [response.embeds[0].setDescription('All users have been banned').setTitle('')],
-					});
+						const collector = signOffMessage.createMessageComponentCollector({
+							componentType: 'BUTTON',
+							filter: async (interaction) => {
+								if (interaction.user.id === message.author.id || interaction.customId !== 'signOff-ban') {
+									await interaction.reply({ ephemeral: true, content: "This maze wasn't meant for you." });
+									return false;
+								}
 
-					const finalText = [
-						`BAN REPORT - ${new Date().toISOString()}`,
-						'',
-						'BANNED MEMBERS',
-						...bannedMembers,
-						'',
-						'BANNED IDs',
-						...ids,
-						'',
-						'FAILED TO BAN',
-						...failedToBan,
-					].join('\n');
+								const preconditionResult = await this.container.stores
+									.get('preconditions')
+									.get('AdminOnly')!
+									.run(
+										{
+											guild: message.guild,
+											author: interaction.user,
+										} as unknown as Message,
+										this,
+										{},
+									);
 
-					await response.channel.send({
-						files: [new MessageAttachment(Buffer.from(finalText), 'ban-report.txt')],
-					});
+								return isOk(preconditionResult);
+							},
+							idle: 60_000,
+						});
+
+						collector.on('collect', async (button) => {
+							if (!signedOffBy.includes(button.user.tag)) {
+								signedOffBy.push(button.user.tag);
+								if (signedOffBy.length < 2) {
+									await button.reply({ content: 'You signed off this ban', ephemeral: true });
+									return;
+								}
+							}
+
+							// Remove components
+							await button.update({
+								components: [],
+								embeds: [createInfoEmbed(this.container.client, 'Ban processing...')],
+							});
+
+							const bannedMembers = [];
+							const ids = [];
+							const failedToBan = [];
+
+							for (const [member, regexp] of toBan) {
+								await response.channel.sendTyping();
+								try {
+									bannedMembers.push(
+										`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
+									);
+									ids.push(member.user.id);
+									await member.ban({ reason: `Name filter matched: ${regexp.source}` });
+								} catch (err) {
+									this.container.logger.warn('Failed to ban member', err);
+									bannedMembers.pop();
+									ids.pop();
+									failedToBan.push(
+										`FAILED TO BAN: ${member.user.tag}; ID: ${member.user.id}; ERROR: ${(err as Error).message}`,
+									);
+								}
+							}
+
+							await signOffMessage.edit({
+								embeds: [
+									response.embeds[0]
+										.setDescription('All users have been banned')
+										.setTitle('')
+										.addField('Signed Off by', `${message.author.tag}, ${signedOffBy.join(', ')}`),
+								],
+							});
+
+							const finalText = [
+								`BAN REPORT - ${new Date().toISOString()}`,
+								'',
+								'BANNED MEMBERS',
+								...bannedMembers,
+								'',
+								'BANNED IDs',
+								...ids,
+								'',
+								'FAILED TO BAN',
+								...failedToBan,
+							].join('\n');
+
+							await response.channel.send({
+								files: [new MessageAttachment(Buffer.from(finalText), 'ban-report.txt')],
+							});
+						});
+					})();
 				},
 			},
 		]);
@@ -152,6 +216,14 @@ export default class extends Command {
 				embed
 					.setTitle('Users that have no roles and match filters')
 					.setDescription(`- ${banChunk.join('\n- ')}`)
+					.addField('\u200b', `In total, **${toBan.length}** members will be banned`),
+			);
+		}
+
+		if (paginated.pages.length === 1) {
+			paginated.addPageEmbed((embed) =>
+				embed
+					.setTitle('Users that have no roles and match filters')
 					.addField('\u200b', `In total, **${toBan.length}** members will be banned`),
 			);
 		}
