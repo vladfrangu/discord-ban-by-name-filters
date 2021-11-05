@@ -157,12 +157,11 @@ export default class extends Command {
 							}
 
 							await signOffMessage.edit({
-								embeds: [
-									response.embeds[0]
-										.setDescription('All users have been banned')
-										.setTitle('')
-										.addField('Signed Off by', `${message.author.tag}, ${signedOffBy.join(', ')}`),
-								],
+								content: [
+									'All users have been banned',
+									'',
+									`Signed Off by ${message.author.tag}, ${signedOffBy.join(', ')}`,
+								].join('\n'),
 							});
 
 							const finalText = [
@@ -214,19 +213,22 @@ export default class extends Command {
 		);
 
 		for (const banChunk of bannableChunks) {
-			paginated.addPageEmbed((embed) =>
-				embed
-					.setTitle('Users that have no roles and match filters')
-					.setDescription(`- ${banChunk.join('\n- ')}`)
-					.addField('\u200b', `In total, **${toBan.length}** members will be banned`),
+			paginated.addPageContent(
+				[
+					'Users that have no roles and match filters',
+					'',
+					`- ${banChunk.join('\n- ')}`,
+					'',
+					`In total, **${toBan.length}** members will be banned`,
+				].join('\n'),
 			);
 		}
 
 		if (paginated.pages.length === 1) {
-			paginated.addPageEmbed((embed) =>
-				embed
-					.setTitle('Users that have no roles and match filters')
-					.addField('\u200b', `In total, **${toBan.length}** members will be banned`),
+			paginated.addPageContent(
+				['Users that have no roles and match filters', '', `In total, **${toBan.length}** members will be banned`].join(
+					'\n',
+				),
 			);
 		}
 
