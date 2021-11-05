@@ -126,8 +126,8 @@ export default class extends Command {
 							}
 
 							signedOffBy.push(button.user.tag);
+							await button.reply({ content: `${button.user.tag} signed off this ban` });
 							if (signedOffBy.length < 2) {
-								await button.reply({ content: `${button.user.tag} signed off this ban` });
 								return;
 							}
 
