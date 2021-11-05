@@ -123,9 +123,9 @@ export default class extends Command {
 							if (!signedOffBy.includes(button.user.tag)) {
 								signedOffBy.push(button.user.tag);
 								if (signedOffBy.length < 2) {
-									await button.reply({ content: 'You signed off this ban', ephemeral: true });
-									return;
+									await button.reply({ content: 'You signed off this ban' });
 								}
+								return;
 							}
 
 							// Remove components
