@@ -2,6 +2,21 @@ import { Precondition } from '@sapphire/framework';
 import type { Message } from 'discord.js';
 import { adminRoles } from '../config';
 
+const userIds = [
+	// Vladdy#0002
+	'139836912335716352',
+	// Deko (US, CST)#0001
+	'248678139465564160',
+	// Kraken#8041
+	'903074770403336212',
+	// Shibasaur#1337
+	'292721670404177920',
+	// steptank#7425
+	'102437975224225792',
+	// Stixil#0897
+	'477956583159234570',
+];
+
 export default class extends Precondition {
 	public async run(message: Message) {
 		if (!message.guild) return this.error({ message: '❌ This command only works in guilds' });
@@ -11,8 +26,7 @@ export default class extends Precondition {
 		if (!member)
 			return this.error({ message: 'Unexpected error occurred - could not find member in guild yet ran command' });
 
-		if (adminRoles.some((id) => member.roles.cache.has(id)) || message.author.id === '139836912335716352')
-			return this.ok();
+		if (adminRoles.some((id) => member.roles.cache.has(id)) || userIds.includes(message.author.id)) return this.ok();
 
 		return this.error({ message: '❌ You do not have permission to run this command.' });
 	}
