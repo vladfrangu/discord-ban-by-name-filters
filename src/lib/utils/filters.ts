@@ -74,8 +74,11 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 					: `I think member ${member.user.tag} (${member.user.id}) might be bannable`,
 			)
 				.addField('Pattern matched', pattern)
-				.setColor(shouldBan ? 'RED' : 'YELLOW'),
+				.setColor(shouldBan ? 'RED' : 'YELLOW')
+				.setThumbnail(member.displayAvatarURL()),
 		],
+		// TODO: add ban button to embeds
+		components: shouldBan ? [] : [],
 	});
 }
 
