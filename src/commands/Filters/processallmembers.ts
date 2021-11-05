@@ -120,11 +120,14 @@ export default class extends Command {
 						});
 
 						collector.on('collect', async (button) => {
-							if (!signedOffBy.includes(button.user.tag)) {
-								signedOffBy.push(button.user.tag);
-								if (signedOffBy.length < 2) {
-									await button.reply({ content: 'You signed off this ban' });
-								}
+							if (signedOffBy.includes(button.user.tag)) {
+								await button.reply({ content: 'You signed off this ban already', ephemeral: true });
+								return;
+							}
+
+							signedOffBy.push(button.user.tag);
+							if (signedOffBy.length < 2) {
+								await button.reply({ content: 'You signed off this ban' });
 								return;
 							}
 
