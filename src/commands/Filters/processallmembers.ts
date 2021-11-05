@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command, CommandOptions } from '@sapphire/framework';
-import { Constants, GuildMember, Message, MessageAttachment } from 'discord.js';
+import { Constants, GuildMember, Message, MessageAttachment, Util } from 'discord.js';
 import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
@@ -140,7 +140,10 @@ export default class extends Command {
 		}
 
 		const bannableChunks = chunk(
-			toBan.map(([member, regex]) => `${member.user.tag} \`(${member.user.id})\`\n└── Pattern: ${regex.source}`),
+			toBan.map(
+				([member, regex]) =>
+					`${Util.escapeMarkdown(member.user.tag)} \`(${member.user.id})\`\n└── Pattern: ${regex.source}`,
+			),
 			10,
 		);
 
