@@ -131,7 +131,7 @@ export default class extends Command {
 							// Remove components
 							await button.update({
 								components: [],
-								embeds: [createInfoEmbed(this.container.client, 'Ban processing...')],
+								content: 'Ban processing...',
 							});
 
 							const bannedMembers = [];
@@ -162,6 +162,7 @@ export default class extends Command {
 									'',
 									`Signed Off by ${message.author.tag}, ${signedOffBy.join(', ')}`,
 								].join('\n'),
+								embeds: [],
 							});
 
 							const finalText = [
