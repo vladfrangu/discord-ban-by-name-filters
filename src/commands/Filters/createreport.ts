@@ -35,8 +35,8 @@ export default class extends Command {
 		const fancyReport: string[] = [];
 		const bannedIds: string[] = [];
 
-		for (const message of fetchedMessages) {
-			await originalMessage.channel.sendTyping();
+		for (const [index, message] of fetchedMessages.entries()) {
+			if (index % 10 === 0) await originalMessage.channel.sendTyping();
 			// Skip messages that have no embeds
 			if (!message.embeds.length) continue;
 			// If it's not the bot message, skip
