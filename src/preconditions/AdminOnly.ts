@@ -17,6 +17,8 @@ const userIds = [
 	'477956583159234570',
 	// Trophias#0001
 	'85185381837836288',
+	// Atomical (UK, GMT+0)#4725
+	'372900980779515904',
 ];
 
 export default class extends Precondition {
