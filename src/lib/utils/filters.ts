@@ -1,6 +1,6 @@
 import { container } from '@sapphire/framework';
 import { randomBytes } from 'crypto';
-import { Collection, GuildMember, TextChannel } from 'discord.js';
+import { Collection, GuildMember, TextChannel, Util } from 'discord.js';
 import { readJSON, writeJSON } from 'fs-extra';
 import { join } from 'path';
 import { logChannelId } from '../../config';
@@ -73,7 +73,7 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 					? `I have banned member ${member.user.tag} (${member.user.id})`
 					: `I think member ${member.user.tag} (${member.user.id}) might be bannable`,
 			)
-				.addField('Pattern matched', pattern)
+				.addField('Pattern matched', Util.escapeMarkdown(pattern))
 				.addField('Joined at', member.joinedAt!.toISOString())
 				.setColor(shouldBan ? 'RED' : 'YELLOW')
 				.setThumbnail(member.displayAvatarURL()),

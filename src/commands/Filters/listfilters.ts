@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command, CommandOptions } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { Message, Util } from 'discord.js';
 import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
@@ -17,12 +17,12 @@ export default class extends Command {
 		const [bannables, alertables] = filters.partition((value) => value.shouldBan);
 
 		const bannableChunks = chunk(
-			bannables.map((item) => `\`${item.regexp.source}\``),
+			bannables.map((item) => `\`${Util.escapeMarkdown(item.regexp.source)}\``),
 			10,
 		);
 
 		const alertableChunks = chunk(
-			alertables.map((item) => `\`${item.regexp.source}\``),
+			alertables.map((item) => `\`${Util.escapeMarkdown(item.regexp.source)}\``),
 			10,
 		);
 
