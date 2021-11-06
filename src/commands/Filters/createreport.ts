@@ -60,7 +60,7 @@ export default class extends Command {
 			bannedIds.push(userId);
 		}
 
-		banReport.push(...fancyReport, '', 'BANNED IDS', ...bannedIds);
+		banReport.push(...fancyReport, '', `TOTAL BANNED: ${bannedIds.length}`, '', 'BANNED IDS', ...bannedIds);
 
 		await originalMessage.channel.send({
 			files: [new MessageAttachment(Buffer.from(banReport.join('\n')), 'ban-report.txt')],
