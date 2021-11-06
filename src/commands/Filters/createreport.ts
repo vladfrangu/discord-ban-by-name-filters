@@ -34,13 +34,22 @@ export default class extends Command {
 		// const fancyReport: string[] = [];
 		// const bannedIds: string[] = [];
 
-		// for (const message of fetchedMessages) {
-		// 	// Skip messages that have no embeds
-		// 	if (!message.embeds.length) continue;
-		// 	// If it's not the bot message, skip
-		// 	if (message.author.id !== this.container.client.user!.id) continue;
+		for (const message of fetchedMessages) {
+			// Skip messages that have no embeds
+			if (!message.embeds.length) continue;
+			// If it's not the bot message, skip
+			if (message.author.id !== this.container.client.user!.id) continue;
 
-		// 	const [embed] = message.embeds;
-		// }
+			const [embed] = message.embeds;
+			// If the embed isn't red, we don't care about it
+			if (embed.color !== 0xed4245) continue;
+
+			const maybeMatch = embed.description?.split('I have banned member ') ?? [];
+			// Try getting the content
+			if (!maybeMatch.length) continue;
+
+			// From this point on we definitely have our message
+			console.log(maybeMatch);
+		}
 	}
 }
