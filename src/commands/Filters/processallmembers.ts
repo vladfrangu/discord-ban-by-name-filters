@@ -134,9 +134,10 @@ export default class extends Command {
 							collector.stop('manual');
 
 							// Remove components
-							await button.update({
+							await signOffMessage.edit({
 								components: [],
 								content: 'Ban processing...',
+								embeds: [],
 							});
 
 							const bannedMembers = [];
@@ -161,7 +162,7 @@ export default class extends Command {
 								}
 							}
 
-							await signOffMessage.edit({
+							await response.channel.send({
 								content: [
 									'All users have been banned',
 									'',
