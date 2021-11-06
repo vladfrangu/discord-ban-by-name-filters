@@ -176,7 +176,7 @@ export default class extends Command {
 								'BANNED MEMBERS',
 								...bannedMembers,
 								'',
-								'BANNED IDs',
+								'BANNED IDS',
 								...ids,
 							];
 
