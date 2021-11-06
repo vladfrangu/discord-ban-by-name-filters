@@ -74,6 +74,7 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 					: `I think member ${member.user.tag} (${member.user.id}) might be bannable`,
 			)
 				.addField('Pattern matched', pattern)
+				.addField('Joined at', member.joinedAt!.toISOString())
 				.setColor(shouldBan ? 'RED' : 'YELLOW')
 				.setThumbnail(member.displayAvatarURL()),
 		],
