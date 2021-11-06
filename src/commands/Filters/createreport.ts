@@ -8,7 +8,7 @@ import type { Message, TextBasedChannels } from 'discord.js';
 	preconditions: ['AdminOnly'],
 })
 export default class extends Command {
-	public async messageRun(_message: Message, args: Args) {
+	public async messageRun(_originalMessage: Message, args: Args) {
 		const url = await args.rest('url');
 		const [_, _channels, _guildId, channelId, startMessageId] = url.pathname.split('/');
 
@@ -29,9 +29,18 @@ export default class extends Command {
 			if (arraified.length < 100) break;
 		}
 
-		const ids = fetchedMessages.map((m) => m.id);
-		const sorted = [...ids].sort((a, b) => Number(BigInt(b) - BigInt(a)));
-		console.log(ids);
-		console.log(sorted);
+		// const banReport = [`BAN REPORT - ${new Date().toISOString()}`, '', 'BANNED MEMBERS'];
+
+		// const fancyReport: string[] = [];
+		// const bannedIds: string[] = [];
+
+		// for (const message of fetchedMessages) {
+		// 	// Skip messages that have no embeds
+		// 	if (!message.embeds.length) continue;
+		// 	// If it's not the bot message, skip
+		// 	if (message.author.id !== this.container.client.user!.id) continue;
+
+		// 	const [embed] = message.embeds;
+		// }
 	}
 }
