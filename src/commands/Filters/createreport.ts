@@ -16,6 +16,8 @@ export default class extends Command {
 		const fetchedMessages: Message[] = [];
 		let lastId = String(BigInt(startMessageId) - 1n);
 
+		await originalMessage.channel.sendTyping();
+
 		while (true) {
 			const messages = await channel.messages.fetch({ limit: 100, after: lastId });
 
@@ -34,6 +36,7 @@ export default class extends Command {
 		const bannedIds: string[] = [];
 
 		for (const message of fetchedMessages) {
+			await originalMessage.channel.sendTyping();
 			// Skip messages that have no embeds
 			if (!message.embeds.length) continue;
 			// If it's not the bot message, skip
