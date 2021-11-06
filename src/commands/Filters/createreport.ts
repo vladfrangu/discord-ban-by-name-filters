@@ -21,7 +21,7 @@ export default class extends Command {
 			const messages = await channel.messages.fetch({ limit: 100, after: lastId });
 
 			const arraified = [...messages.values()];
-			lastId = arraified.at(-1)!.id;
+			lastId = arraified.at(0)!.id;
 
 			fetchedMessages.push(...arraified);
 
