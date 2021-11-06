@@ -19,6 +19,8 @@ const userIds = [
 	'85185381837836288',
 	// Atomical (UK, GMT+0)#4725
 	'372900980779515904',
+	// Hermit#1776
+	'715485788841705484',
 ];
 
 export default class extends Precondition {
