@@ -20,8 +20,8 @@ export default class extends Command {
 		while (true) {
 			const messages = await channel.messages.fetch({ limit: 100, after: lastId });
 
-			const arraified = [...messages.values()];
-			lastId = arraified.at(0)!.id;
+			const arraified = [...messages.values()].sort((a, b) => Number(BigInt(a.id) - BigInt(b.id)));
+			lastId = arraified.at(-1)!.id;
 
 			fetchedMessages.push(...arraified);
 
