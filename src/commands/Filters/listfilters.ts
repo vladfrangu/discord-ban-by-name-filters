@@ -17,12 +17,12 @@ export default class extends Command {
 		const [bannables, alertables] = filters.partition((value) => value.shouldBan);
 
 		const bannableChunks = chunk(
-			bannables.map((item) => `\`${Util.escapeMarkdown(item.regexp.source)}\``),
+			bannables.map((item) => `\`${Util.escapeInlineCode(item.regexp.source)}\``),
 			10,
 		);
 
 		const alertableChunks = chunk(
-			alertables.map((item) => `\`${Util.escapeMarkdown(item.regexp.source)}\``),
+			alertables.map((item) => `\`${Util.escapeInlineCode(item.regexp.source)}\``),
 			10,
 		);
 

@@ -19,17 +19,17 @@ export default class extends Command {
 	public async messageRun(message: Message, args: Args) {
 		const filter = await args.rest('string');
 
-		const result = await addFilter(
-			onlyUsersWhoCanAddFullRegexes.includes(message.author.id)
-				? filter
-				: filter.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&'),
-		);
+		const finalPattern = onlyUsersWhoCanAddFullRegexes.includes(message.author.id)
+			? filter
+			: filter.replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+
+		const result = await addFilter(finalPattern);
 
 		return message.channel.send({
 			embeds: [
 				result
-					? createInfoEmbed(this.container.client, `Added filter with pattern \`${filter}\``)
-					: createInfoEmbed(this.container.client, `A filter with pattern \`${filter}\` already exists`).setColor(
+					? createInfoEmbed(this.container.client, `Added filter with pattern \`${finalPattern}\``)
+					: createInfoEmbed(this.container.client, `A filter with pattern \`${finalPattern}\` already exists`).setColor(
 							'YELLOW',
 					  ),
 			],
