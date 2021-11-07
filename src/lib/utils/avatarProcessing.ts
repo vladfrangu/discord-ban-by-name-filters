@@ -34,6 +34,8 @@ export async function loadAvatars() {
 async function traverseDirectory(directory: string, label = '') {
 	for await (const entry of await opendir(directory)) {
 		if (entry.isFile()) {
+			if (entry.name.startsWith('.')) continue;
+
 			loadedAvatars.set(
 				`${label}${entry.name.slice(0, entry.name.lastIndexOf('.'))}`,
 				await readFile(join(directory, entry.name)),
