@@ -221,6 +221,7 @@ export default class extends Command {
 			// Fetch the user's avatar
 			const buffer = await fetch(member.user.avatarURL({ format: 'png', size: 512 })!, FetchResultTypes.Buffer);
 
+			await message.channel.send(member.user.avatarURL()!);
 			await checkAvatar(buffer);
 			break;
 		}
