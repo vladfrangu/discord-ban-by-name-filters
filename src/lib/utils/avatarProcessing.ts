@@ -14,10 +14,27 @@ export async function checkAvatar(buffer: Buffer): Promise<CheckResult> {
 			Resemble(image)
 				.compareTo(buffer)
 				.scaleToSameSize()
+				.setReturnEarlyThreshold(20)
 				.onComplete((result) => resolve(result));
 		});
 
-		console.log(result);
+		/*
+		{
+		  isSameDimensions: true,
+		  dimensionDifference: { width: 0, height: 0 },
+		  rawMisMatchPercentage: 99.22960069444444,
+		  misMatchPercentage: '99.23',
+		  diffBounds: { top: 0, left: 0, bottom: 95, right: 95 },
+		  analysisTime: 14,
+		  getImageDataUrl: [Function (anonymous)],
+		  getBuffer: [Function (anonymous)]
+		}
+		*/
+
+		const numberedPercentage = Number(result.misMatchPercentage);
+
+		// Images that are more than 10% different are highly unlikely to be a match... 🤞
+		if (numberedPercentage > 10) continue;
 
 		return { matchPercentage: result.misMatchPercentage, avatarName, matched: true };
 	}

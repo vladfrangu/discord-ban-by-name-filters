@@ -210,9 +210,38 @@ export default class extends Command {
 			},
 		]);
 
-		const toBan: [member: GuildMember, avatarName: string][] = [];
+		let currentMember = 1;
+
+		const progressStatus = await message.channel.send({
+			embeds: [
+				createInfoEmbed(
+					this.container.client,
+					`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
+						members.size
+					}`,
+				),
+			],
+		});
+
+		const toBan: [member: GuildMember, avatarName: string, matchPercent: string][] = [];
 
 		for (const member of members.values()) {
+			currentMember++;
+
+			if (currentMember % 10 === 0) {
+				await progressStatus.edit({
+					embeds: [
+						createInfoEmbed(
+							this.container.client,
+							`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
+								members.size
+							}`,
+						),
+					],
+				});
+				await message.channel.sendTyping();
+			}
+
 			// Skip any member with more than 1 role
 			if (member.roles.cache.size > 1) continue;
 			// If a member has no avatar, skip them
@@ -221,17 +250,19 @@ export default class extends Command {
 			// Fetch the user's avatar
 			const buffer = await fetch(member.user.avatarURL({ format: 'png', size: 512 })!, FetchResultTypes.Buffer);
 
-			await message.channel.send(member.user.avatarURL()!);
-			await checkAvatar(buffer);
-			break;
+			const checkResult = await checkAvatar(buffer);
+
+			if (checkResult.matched) {
+				toBan.push([member, checkResult.avatarName, checkResult.matchPercentage]);
+			}
 		}
 
 		const bannableChunks = chunk(
 			toBan.map(
-				([member, avatarName]) =>
+				([member, avatarName, matchPercentage]) =>
 					`${member.user.toString()} - ${Util.escapeMarkdown(member.user.tag)} \`(${
 						member.user.id
-					})\`\n├── Joined at: ${member.joinedAt!.toUTCString()}\n└── Matched avatar: ${avatarName}`,
+					})\`\n├── Joined at: ${member.joinedAt!.toUTCString()}\n├── Matched avatar: ${avatarName}\n└── Match %: **${matchPercentage}**`,
 			),
 			10,
 		);
