@@ -1,12 +1,40 @@
 import { opendir, readFile } from 'fs/promises';
 import { join } from 'path';
 import Resemble, { ResembleComparisonResult } from 'resemblejs';
+import { fetch, FetchResultTypes } from '@sapphire/fetch';
 
-export const avatarImagesPath = join(__dirname, '..', '..', '..', 'data', 'avatars');
+export const avatarImagesPath = join(__dirname, '..', '..', '..', '..', 'data', 'avatars');
+export const workerPath = join(__dirname, 'worker.js');
 
 export const loadedAvatars = new Map<string, Buffer>();
 
 export type CheckResult = { matched: false } | { matched: true; avatarName: string; matchPercentage: string };
+
+export async function parallelCheckAvatars(input: SimplifiedMember[]) {
+	const returnData: ReturnWorkerData[] = [];
+
+	await Promise.all(
+		input.map(async (entry) => {
+			const buffer = await fetch(entry.avatarUrl, FetchResultTypes.Buffer);
+
+			const result = await checkAvatar(buffer);
+
+			console.log(result);
+
+			if (result.matched) {
+				returnData.push({
+					joinedAt: entry.joinedAt,
+					matchedAvatarName: result.avatarName,
+					matchedPercentage: result.matchPercentage,
+					userId: entry.userId,
+					userTag: entry.userTag,
+				});
+			}
+		}),
+	);
+
+	return returnData;
+}
 
 export async function checkAvatar(buffer: Buffer): Promise<CheckResult> {
 	for (const [avatarName, image] of loadedAvatars.entries()) {
@@ -60,4 +88,23 @@ async function traverseDirectory(directory: string, label = '') {
 			await traverseDirectory(join(directory, entry.name), `${label}${entry.name}/`);
 		}
 	}
+}
+
+export interface AvatarWorkerData {
+	members: SimplifiedMember[];
+}
+
+export interface SimplifiedMember {
+	userId: string;
+	userTag: string;
+	joinedAt: string;
+	avatarUrl: string;
+}
+
+export interface ReturnWorkerData {
+	userId: string;
+	userTag: string;
+	joinedAt: string;
+	matchedAvatarName: string;
+	matchedPercentage: string;
 }

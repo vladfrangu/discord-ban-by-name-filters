@@ -4,7 +4,7 @@ import { cyanBright, green, magenta } from 'colorette';
 import { existsSync } from 'fs';
 import { ensureFile, writeJSON } from 'fs-extra';
 import { guildId } from '../config';
-import { loadAvatars } from '../lib/utils/avatarProcessing';
+import { loadAvatars } from '../lib/utils/avatarProcessing/avatarProcessing';
 import { jsonFilePath, loadFilters } from '../lib/utils/filters';
 
 @ApplyOptions<ListenerOptions>({

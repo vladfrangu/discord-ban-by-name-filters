@@ -1,11 +1,15 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command, CommandOptions, isOk } from '@sapphire/framework';
-import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
+import { Constants, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
 import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
-import { fetch, FetchResultTypes } from '@sapphire/fetch';
+
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
-import { checkAvatar, loadedAvatars } from '../../lib/utils/avatarProcessing';
+import {
+	parallelCheckAvatars,
+	loadedAvatars,
+	SimplifiedMember,
+} from '../../lib/utils/avatarProcessing/avatarProcessing';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Processes all members that match the current filters',
@@ -18,6 +22,8 @@ export default class extends Command {
 				embeds: [createInfoEmbed(this.container.client, 'There are no registered avatars to check.')],
 			});
 		}
+
+		await message.channel.sendTyping();
 
 		const members = await message.guild!.members.fetch();
 
@@ -150,20 +156,20 @@ export default class extends Command {
 							const ids = [];
 							const failedToBan = [];
 
-							for (const [member, avatarName] of toBan) {
+							for (const member of toBan) {
 								await response.channel.sendTyping();
 								try {
-									bannedMembers.push(
-										`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
-									);
-									ids.push(member.user.id);
-									await member.ban({ reason: `Avatar matched: ${avatarName}` });
+									bannedMembers.push(`JOINED AT: ${member.joinedAt}; TAG: ${member.userTag}; ID: ${member.userId}`);
+									ids.push(member.userId);
+									await message.guild!.members.ban(member.userId, {
+										reason: `Matched avatar ${member.matchedAvatarName} with ${member.matchedPercentage}%`,
+									});
 								} catch (err) {
 									this.container.logger.warn('Failed to ban member', err);
 									bannedMembers.pop();
 									ids.pop();
 									failedToBan.push(
-										`FAILED TO BAN: ${member.user.tag}; ID: ${member.user.id}; ERROR: ${(err as Error).message}`,
+										`FAILED TO BAN: ${member.userTag}; ID: ${member.userId}; ERROR: ${(err as Error).message}`,
 									);
 								}
 							}
@@ -210,59 +216,37 @@ export default class extends Command {
 			},
 		]);
 
-		let currentMember = 1;
-
 		const progressStatus = await message.channel.send({
-			embeds: [
-				createInfoEmbed(
-					this.container.client,
-					`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
-						members.size
-					}`,
-				),
-			],
+			embeds: [createInfoEmbed(this.container.client, 'Processing member avatars, this might take a while...')],
 		});
 
-		const toBan: [member: GuildMember, avatarName: string, matchPercent: string][] = [];
+		const membersToProcess: SimplifiedMember[] = [];
 
 		for (const member of members.values()) {
-			currentMember++;
-
-			if (currentMember % 10 === 0) {
-				await progressStatus.edit({
-					embeds: [
-						createInfoEmbed(
-							this.container.client,
-							`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
-								members.size
-							}`,
-						),
-					],
-				});
-				await message.channel.sendTyping();
-			}
-
 			// Skip any member with more than 1 role
 			if (member.roles.cache.size > 1) continue;
 			// If a member has no avatar, skip them
 			if (!member.user.avatar) continue;
 
-			// Fetch the user's avatar
-			const buffer = await fetch(member.user.avatarURL({ format: 'png', size: 512 })!, FetchResultTypes.Buffer);
-
-			const checkResult = await checkAvatar(buffer);
-
-			if (checkResult.matched) {
-				toBan.push([member, checkResult.avatarName, checkResult.matchPercentage]);
-			}
+			// Add the user's data
+			membersToProcess.push({
+				avatarUrl: member.user.avatarURL({ format: 'png', size: 512 })!,
+				userId: member.user.id,
+				userTag: member.user.tag,
+				joinedAt: member.joinedAt!.toUTCString(),
+			});
 		}
+
+		const toBan = await parallelCheckAvatars(membersToProcess);
+
+		await progressStatus.delete();
 
 		const bannableChunks = chunk(
 			toBan.map(
-				([member, avatarName, matchPercentage]) =>
-					`${member.user.toString()} - ${Util.escapeMarkdown(member.user.tag)} \`(${
-						member.user.id
-					})\`\n├── Joined at: ${member.joinedAt!.toUTCString()}\n├── Matched avatar: ${avatarName}\n└── Match %: **${matchPercentage}**`,
+				({ matchedAvatarName, matchedPercentage, userId, userTag, joinedAt }) =>
+					`<@!${userId}> - ${Util.escapeMarkdown(
+						userTag,
+					)} \`(${userId})\`\n├── Joined at: ${joinedAt}\n├── Matched avatar: ${matchedAvatarName}\n└── Match %: **${matchedPercentage}**`,
 			),
 			10,
 		);
