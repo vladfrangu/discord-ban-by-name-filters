@@ -14,7 +14,6 @@ export async function checkAvatar(buffer: Buffer): Promise<CheckResult> {
 			Resemble(image)
 				.compareTo(buffer)
 				.scaleToSameSize()
-				.setReturnEarlyThreshold(10)
 				.onComplete((result) => resolve(result));
 		});
 
