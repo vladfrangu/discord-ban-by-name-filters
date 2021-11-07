@@ -4,6 +4,7 @@ import { cyanBright, green, magenta } from 'colorette';
 import { existsSync } from 'fs';
 import { ensureFile, writeJSON } from 'fs-extra';
 import { guildId } from '../config';
+import { loadAvatars } from '../lib/utils/avatarProcessing';
 import { jsonFilePath, loadFilters } from '../lib/utils/filters';
 
 @ApplyOptions<ListenerOptions>({
@@ -31,5 +32,6 @@ export default class ReadyEvent extends Listener {
 		}
 
 		await loadFilters();
+		await loadAvatars();
 	}
 }

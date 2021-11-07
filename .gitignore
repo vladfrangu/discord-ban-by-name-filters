@@ -15,7 +15,8 @@ coverage/
 
 # Ignore bwd folders
 dist/
-data/
+data/patterns.json
+data/avatars/*.png
 
 # Ignore JavaScript files
 **/*.js
