@@ -249,26 +249,31 @@ export default class extends Command {
 				await message.channel.sendTyping();
 			}
 
-			// Fetch the user's avatar
-			const buffer = await fetch(
-				member.user.avatarURL({ format: 'png', size: 128 })!,
-				{
-					headers: {
-						'User-Agent': 'Ban Members by Name / Avatar (https://github.com/vladfrangu/discord-ban-by-name-filters);',
+			try {
+				// Fetch the user's avatar
+				const buffer = await fetch(
+					member.user.avatarURL({ format: 'png', size: 128 })!,
+					{
+						headers: {
+							'User-Agent': 'Ban Members by Name / Avatar (https://github.com/vladfrangu/discord-ban-by-name-filters);',
+						},
 					},
-				},
-				FetchResultTypes.Buffer,
-			);
+					FetchResultTypes.Buffer,
+				);
 
-			const checkResult = await checkAvatar(buffer);
+				const checkResult = await checkAvatar(buffer);
 
-			if (checkResult.matched) {
-				toBan.push([member, checkResult.avatarName, checkResult.matchPercentage]);
+				if (checkResult.matched) {
+					toBan.push([member, checkResult.avatarName, checkResult.matchPercentage]);
+				}
+
+				// Discord senpai don't ratelimit us pls
+				// eslint-disable-next-line @typescript-eslint/no-implied-eval
+				await setTimeout(1500);
+			} catch {
+				// Failed to fetch avatar .w.
+				continue;
 			}
-
-			// Discord senpai don't ratelimit us pls
-			// eslint-disable-next-line @typescript-eslint/no-implied-eval
-			await setTimeout(1500);
 		}
 
 		await progressStatus.delete();
