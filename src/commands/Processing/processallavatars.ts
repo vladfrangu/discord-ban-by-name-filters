@@ -244,9 +244,7 @@ export default class extends Command {
 					embeds: [
 						createInfoEmbed(
 							this.container.client,
-							`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
-								members.size
-							}\n\nMatched members: **${toBan.length}**`,
+							`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${members.size.toLocaleString()}\n\nMatched members: **${toBan.length.toLocaleString()}**`,
 						),
 					],
 				});
