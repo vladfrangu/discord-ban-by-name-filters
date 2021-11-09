@@ -66,6 +66,7 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 	const channel = container.client.channels.cache.get(logChannelId) as TextChannel;
 
 	await channel.send({
+		content: member.user.toString(),
 		embeds: [
 			createInfoEmbed(
 				container.client,
@@ -80,6 +81,7 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 		],
 		// TODO: add ban button to embeds
 		components: shouldBan ? [] : [],
+		allowedMentions: { parse: [] },
 	});
 }
 
