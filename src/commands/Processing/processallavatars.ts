@@ -218,9 +218,7 @@ export default class extends Command {
 			embeds: [
 				createInfoEmbed(
 					this.container.client,
-					`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
-						members.size
-					}`,
+					`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${members.size.toLocaleString()}`,
 				),
 			],
 		});
@@ -253,7 +251,7 @@ export default class extends Command {
 
 			// Fetch the user's avatar
 			const buffer = await fetch(
-				member.user.avatarURL({ format: 'png', size: 512 })!,
+				member.user.avatarURL({ format: 'png', size: 128 })!,
 				{
 					headers: {
 						'User-Agent': 'Ban Members by Name / Avatar (https://github.com/vladfrangu/discord-ban-by-name-filters);',
@@ -272,6 +270,8 @@ export default class extends Command {
 			// eslint-disable-next-line @typescript-eslint/no-implied-eval
 			await setTimeout(1500);
 		}
+
+		await progressStatus.delete();
 
 		const bannableChunks = chunk(
 			toBan.map(
