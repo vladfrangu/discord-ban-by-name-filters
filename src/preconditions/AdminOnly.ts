@@ -21,6 +21,8 @@ const userIds = [
 	'372900980779515904',
 	// Hermit#1776
 	'715485788841705484',
+	// U_B
+	'307735012751441920',
 ];
 
 export default class extends Precondition {
