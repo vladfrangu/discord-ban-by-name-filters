@@ -6,6 +6,8 @@ import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
 import { checkAvatar, loadedAvatars } from '../../lib/utils/avatarProcessing';
+import { Time } from '@sapphire/time-utilities';
+import { setTimeout } from 'timers/promises';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Processes all members that match the current filters',
@@ -225,6 +227,8 @@ export default class extends Command {
 
 		const toBan: [member: GuildMember, avatarName: string, matchPercent: string][] = [];
 
+		const sixHoursAgo = Date.now() - Time.Hour * 6;
+
 		for (const member of members.values()) {
 			currentMember++;
 
@@ -246,15 +250,29 @@ export default class extends Command {
 			if (member.roles.cache.size > 1) continue;
 			// If a member has no avatar, skip them
 			if (!member.user.avatar) continue;
+			// If the member didn't join in the past 6 hours, skip them
+			if (member.joinedTimestamp! < sixHoursAgo) continue;
 
 			// Fetch the user's avatar
-			const buffer = await fetch(member.user.avatarURL({ format: 'png', size: 512 })!, FetchResultTypes.Buffer);
+			const buffer = await fetch(
+				member.user.avatarURL({ format: 'png', size: 512 })!,
+				{
+					headers: {
+						'User-Agent': 'Ban Members by Name / Avatar (https://github.com/vladfrangu/discord-ban-by-name-filters);',
+					},
+				},
+				FetchResultTypes.Buffer,
+			);
 
 			const checkResult = await checkAvatar(buffer);
 
 			if (checkResult.matched) {
 				toBan.push([member, checkResult.avatarName, checkResult.matchPercentage]);
 			}
+
+			// Discord senpai don't ratelimit us pls
+			// eslint-disable-next-line @typescript-eslint/no-implied-eval
+			await setTimeout(1500);
 		}
 
 		const bannableChunks = chunk(
@@ -270,7 +288,7 @@ export default class extends Command {
 		for (const banChunk of bannableChunks) {
 			paginated.addPageContent(
 				[
-					'**Users that have no roles and match avatars**',
+					'**Users that have no roles, joined in the last 6 hours and match avatars**',
 					'',
 					`- ${banChunk.join('\n- ')}`,
 					'',
@@ -282,7 +300,7 @@ export default class extends Command {
 		if (paginated.pages.length === 1) {
 			paginated.addPageContent(
 				[
-					'**Users that have no roles and match avatars**',
+					'**Users that have no roles, joined in the last 6 hours and match avatars**',
 					'',
 					`In total, **${toBan.length}** members will be banned`,
 				].join('\n'),
