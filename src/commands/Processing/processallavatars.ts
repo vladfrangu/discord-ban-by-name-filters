@@ -239,7 +239,7 @@ export default class extends Command {
 							this.container.client,
 							`Processing member avatars, this might take a while...\n\nProgress: ${currentMember.toLocaleString()} / ${
 								members.size
-							}`,
+							}\n\nMatched members: **${toBan.length}**`,
 						),
 					],
 				});
