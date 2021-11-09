@@ -232,6 +232,13 @@ export default class extends Command {
 		for (const member of members.values()) {
 			currentMember++;
 
+			// Skip any member with more than 1 role
+			if (member.roles.cache.size > 1) continue;
+			// If a member has no avatar, skip them
+			if (!member.user.avatar) continue;
+			// If the member didn't join in the past 6 hours, skip them
+			if (member.joinedTimestamp! < sixHoursAgo) continue;
+
 			if (currentMember % 10 === 0) {
 				await progressStatus.edit({
 					embeds: [
@@ -245,13 +252,6 @@ export default class extends Command {
 				});
 				await message.channel.sendTyping();
 			}
-
-			// Skip any member with more than 1 role
-			if (member.roles.cache.size > 1) continue;
-			// If a member has no avatar, skip them
-			if (!member.user.avatar) continue;
-			// If the member didn't join in the past 6 hours, skip them
-			if (member.joinedTimestamp! < sixHoursAgo) continue;
 
 			// Fetch the user's avatar
 			const buffer = await fetch(
