@@ -42,6 +42,22 @@ export async function checkAvatar(buffer: Buffer): Promise<CheckResult> {
 	return { matched: false };
 }
 
+export async function returnAllCheckedAvatarResults(buffer: Buffer) {
+	return Promise.all(
+		[...loadedAvatars.entries()].map(async ([avatarName, image]) => {
+			const result = await new Promise<ResembleComparisonResult>((resolve) => {
+				Resemble(image)
+					.compareTo(buffer)
+					.scaleToSameSize()
+					.setReturnEarlyThreshold(20)
+					.onComplete((result) => resolve(result));
+			});
+
+			return { matchPercentage: result.misMatchPercentage, avatarName };
+		}),
+	);
+}
+
 export async function loadAvatars() {
 	loadedAvatars.clear();
 	await traverseDirectory(avatarImagesPath);
