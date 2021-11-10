@@ -21,7 +21,7 @@ export default class extends Command {
 			});
 		}
 
-		const members = await message.guild!.members.fetch();
+		const members = (await message.guild!.members.fetch()).sorted((a, b) => b.joinedTimestamp! - a.joinedTimestamp!);
 
 		const paginated = new PaginatedMessage({ template: createInfoEmbed(this.container.client, '') }).setActions([
 			{
@@ -235,7 +235,7 @@ export default class extends Command {
 			// If a member has no avatar, skip them
 			if (!member.user.avatar) continue;
 			// If the member didn't join in the past 6 hours, skip them
-			if (member.joinedTimestamp! < sixHoursAgo) continue;
+			if (member.joinedTimestamp! < sixHoursAgo) break;
 
 			if (currentMember % 10 === 0) {
 				await progressStatus.edit({
