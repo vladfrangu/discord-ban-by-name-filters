@@ -283,7 +283,7 @@ export default class extends Command {
 				([member, avatarName, matchPercentage]) =>
 					`${member.user.toString()} - ${Util.escapeMarkdown(member.user.tag)} \`(${
 						member.user.id
-					})\`\n├── Joined at: ${member.joinedAt!.toUTCString()}\n├── Matched avatar: ${avatarName}\n└── Match %: **${matchPercentage}**`,
+					})\`\n├── Joined at: ${member.joinedAt!.toUTCString()}\n├── Matched avatar: ${avatarName}\n└── Difference %: **${matchPercentage}**`,
 			),
 			10,
 		);

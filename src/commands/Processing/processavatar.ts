@@ -41,12 +41,12 @@ export default class extends Command {
 		const results = await returnAllCheckedAvatarResults(buffer);
 
 		const finalText = results
-			.map((entry) => `├── Matched avatar: **${entry.avatarName}**\n└── Match %: **${entry.matchPercentage}**`)
+			.map((entry) => `├── Matched avatar: **${entry.avatarName}**\n└── Difference %: **${entry.matchPercentage}**`)
 			.join('\n\n');
 
 		return message.channel.send({
 			embeds: [
-				createInfoEmbed(this.container.client, finalText)
+				createInfoEmbed(this.container.client, `A percentage less than 10% means they're super close.\n\n${finalText}`)
 					.setTitle(`Avatar report for ${user.tag}`)
 					.setThumbnail(user.displayAvatarURL()),
 			],
