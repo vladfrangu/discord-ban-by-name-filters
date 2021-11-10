@@ -5,6 +5,7 @@ import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
 import { filters } from '../../lib/utils/filters';
+import remove from 'confusables';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Processes all members that match the current filters',
@@ -212,8 +213,10 @@ export default class extends Command {
 			// Skip any member with more than 1 role
 			if (member.roles.cache.size > 1) continue;
 
+			const cleanUsername = remove(member.user.username);
+
 			for (const { regexp } of bannables.values()) {
-				if (regexp.test(member.user.username)) {
+				if (regexp.test(cleanUsername)) {
 					toBan.push([member, regexp]);
 					break;
 				}

@@ -1,4 +1,5 @@
 import { container } from '@sapphire/framework';
+import remove from 'confusables';
 import { randomBytes } from 'crypto';
 import { Collection, GuildMember, TextChannel, Util } from 'discord.js';
 import { readJSON, writeJSON } from 'fs-extra';
@@ -49,8 +50,10 @@ export async function removeFilter(pattern: string) {
 }
 
 export async function checkIfMemberMatchesFilter(member: GuildMember) {
+	const cleanUsername = remove(member.user.username);
+
 	for (const patternData of filters.values()) {
-		if (patternData.regexp.test(member.user.username)) {
+		if (patternData.regexp.test(cleanUsername)) {
 			if (patternData.shouldBan) {
 				await member.ban({ reason: `Name filter matched: ${patternData.regexp.source}` });
 				await logToChannel(member, patternData.regexp.source, true);
