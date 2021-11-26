@@ -79,6 +79,7 @@ export async function logToChannel(member: GuildMember, pattern: string, shouldB
 			)
 				.addField('Pattern matched', Util.escapeMarkdown(pattern))
 				.addField('Joined at', member.joinedAt!.toISOString())
+				.addField('Avatar hash', member.user.avatar ?? 'No avatar')
 				.setColor(shouldBan ? 'RED' : 'YELLOW')
 				.setThumbnail(member.displayAvatarURL()),
 		],
