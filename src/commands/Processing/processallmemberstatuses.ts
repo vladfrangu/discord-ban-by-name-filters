@@ -212,13 +212,13 @@ export default class extends Command {
 		for (const member of members.values()) {
 			if (!member.presence?.activities.length) continue;
 
-			activityLoop: for (const activity of member.presence.activities) {
+			for (const activity of member.presence.activities) {
 				const cleanActivity = remove(activity.name);
 
 				for (const { regexp } of bannables.values()) {
 					if (regexp.test(cleanActivity)) {
 						toBan.push([member, regexp]);
-						break activityLoop;
+						break;
 					}
 				}
 			}
