@@ -210,6 +210,8 @@ export default class extends Command {
 		const toBan: [GuildMember, RegExp][] = [];
 
 		for (const member of members.values()) {
+			// Skip any member with more than 1 role
+			if (member.roles.cache.size > 1) continue;
 			if (!member.presence?.activities.length) continue;
 
 			for (const activity of member.presence.activities) {
@@ -237,7 +239,7 @@ export default class extends Command {
 		for (const banChunk of bannableChunks) {
 			paginated.addPageContent(
 				[
-					'**Users that have statuses and match filters**',
+					'**Users that have no roles, have statuses and match filters**',
 					'',
 					`- ${banChunk.join('\n- ')}`,
 					'',
@@ -249,7 +251,7 @@ export default class extends Command {
 		if (paginated.pages.length === 1) {
 			paginated.addPageContent(
 				[
-					'**Users that have statuses and match filters**',
+					'**Users that have no roles, have statuses and match filters**',
 					'',
 					`In total, **${toBan.length}** members will be banned`,
 				].join('\n'),
