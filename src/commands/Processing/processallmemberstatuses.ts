@@ -14,7 +14,7 @@ import remove from 'confusables';
 export default class extends Command {
 	public async messageRun(message: Message) {
 		await message.channel.sendTyping();
-		const members = await message.guild!.members.fetch();
+		const members = await message.guild!.members.fetch({ withPresences: true, force: true });
 
 		const paginated = new PaginatedMessage({ template: createInfoEmbed(this.container.client, '') }).setActions([
 			{
