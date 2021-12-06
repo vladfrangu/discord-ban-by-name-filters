@@ -6,6 +6,7 @@ import { readJSON, writeJSON } from 'fs-extra';
 import { join } from 'path';
 import { logChannelId } from '../../config';
 import { createInfoEmbed } from './createInfoEmbed';
+import { pattern } from './emojiRegex';
 
 export const jsonFilePath = join(__dirname, '..', '..', '..', 'data', 'patterns.json');
 
@@ -50,7 +51,8 @@ export async function removeFilter(pattern: string) {
 }
 
 export async function checkIfMemberMatchesFilter(member: GuildMember) {
-	const cleanUsername = remove(member.user.username);
+	// Clean username and strip emojis
+	const cleanUsername = remove(member.user.username).replace(pattern, '');
 
 	for (const patternData of filters.values()) {
 		if (patternData.regexp.test(cleanUsername)) {
