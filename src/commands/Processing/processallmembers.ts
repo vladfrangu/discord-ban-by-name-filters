@@ -1,11 +1,11 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions, isOk } from '@sapphire/framework';
-import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
-import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
+import { Command, CommandOptions, isOk } from '@sapphire/framework';
+import { chunk } from '@sapphire/utilities';
+import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
+import { cleanUsername } from '../../lib/utils/cleanUsername';
 import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
 import { filters } from '../../lib/utils/filters';
-import remove from 'confusables';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Processes all members that match the current filters',
@@ -213,10 +213,10 @@ export default class extends Command {
 			// Skip any member with more than 1 role
 			if (member.roles.cache.size > 1) continue;
 
-			const cleanUsername = remove(member.user.username);
+			const cleanResult = cleanUsername(member.user.username);
 
 			for (const { regexp } of bannables.values()) {
-				if (regexp.test(cleanUsername)) {
+				if (regexp.test(cleanResult)) {
 					toBan.push([member, regexp]);
 					break;
 				}
