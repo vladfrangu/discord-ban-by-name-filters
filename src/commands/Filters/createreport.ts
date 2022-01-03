@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Args, Command, CommandOptions } from '@sapphire/framework';
-import { Message, MessageAttachment, TextBasedChannels } from 'discord.js';
+import { Message, MessageAttachment, GuildTextBasedChannel } from 'discord.js';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Creates a report from a message url',
@@ -11,7 +11,7 @@ export default class extends Command {
 		const url = await args.rest('url');
 		const [_, _channels, _guildId, channelId, startMessageId] = url.pathname.split('/');
 
-		const channel = this.container.client.channels.cache.get(channelId) as TextBasedChannels;
+		const channel = this.container.client.channels.cache.get(channelId) as GuildTextBasedChannel;
 
 		const fetchedMessages: Message[] = [];
 		let lastId = String(BigInt(startMessageId) - 1n);
