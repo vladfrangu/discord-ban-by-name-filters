@@ -1,4 +1,4 @@
-import { getCode, isLetterOrDigit, isNumber, isWhiteSpace } from '@skyra/char';
+import { getCode, isWhiteSpace } from '@skyra/char';
 import remove, { alphabetMap, characters, confusablesMap } from 'confusables';
 import { pattern } from './emojiRegex';
 
@@ -16,10 +16,10 @@ export function cleanUsername(input: string) {
 	for (const char of split) {
 		const code = getCode(char);
 
-		if (isLetterOrDigit(code) || isNumber(code)) {
-			finalUsername.push(char);
-		} else if (isWhiteSpace(code)) {
+		if (isWhiteSpace(code)) {
 			finalUsername.push(' ');
+		} else {
+			finalUsername.push(char);
 		}
 	}
 
