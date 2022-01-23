@@ -10,6 +10,10 @@ export default class PresenceUpdateListener extends Listener {
 
 		const guild = this.container.client.guilds.resolve(guildId)!;
 		const member = await guild.members.fetch({ user: user.id });
+
+		// If the member has roles, return
+		if (member.roles.cache.size > 1) return;
+
 		await checkIfMemberMatchesFilter(member);
 	}
 }
