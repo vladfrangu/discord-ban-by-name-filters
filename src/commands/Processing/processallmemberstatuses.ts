@@ -152,7 +152,7 @@ export default class extends Command {
 										`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
 									);
 									ids.push(member.user.id);
-									await member.ban({ reason: `Name filter matched: ${regexp.source}` });
+									await member.ban({ reason: `Name filter matched: ${regexp.source}`, days: 7 });
 								} catch (err) {
 									this.container.logger.warn('Failed to ban member', err);
 									bannedMembers.pop();

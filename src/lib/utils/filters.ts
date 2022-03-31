@@ -56,7 +56,7 @@ export async function checkIfMemberMatchesFilter(member: GuildMember) {
 	for (const patternData of filters.values()) {
 		if (patternData.regexp.test(cleanResult)) {
 			if (patternData.shouldBan) {
-				await member.ban({ reason: `Name filter matched: ${patternData.regexp.source}` });
+				await member.ban({ reason: `Name filter matched: ${patternData.regexp.source}`, days: 7 });
 				await logToChannel(member, patternData.regexp.source, true);
 			} else {
 				await logToChannel(member, patternData.regexp.source, false);

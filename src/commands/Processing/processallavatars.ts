@@ -1,13 +1,13 @@
 import { ApplyOptions } from '@sapphire/decorators';
-import { Command, CommandOptions, isOk } from '@sapphire/framework';
-import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
-import { chunk } from '@sapphire/utilities';
 import { PaginatedMessage } from '@sapphire/discord.js-utilities';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
-import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
-import { checkAvatar, loadedAvatars } from '../../lib/utils/avatarProcessing';
+import { Command, CommandOptions, isOk } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
+import { chunk } from '@sapphire/utilities';
+import { Constants, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Util } from 'discord.js';
 import { setTimeout } from 'timers/promises';
+import { checkAvatar, loadedAvatars } from '../../lib/utils/avatarProcessing';
+import { createInfoEmbed } from '../../lib/utils/createInfoEmbed';
 
 @ApplyOptions<CommandOptions>({
 	description: 'Processes all members that match the current filters',
@@ -159,7 +159,7 @@ export default class extends Command {
 										`JOINED AT: ${member.joinedAt!.toISOString()}; TAG: ${member.user.tag}; ID: ${member.user.id}`,
 									);
 									ids.push(member.user.id);
-									await member.ban({ reason: `Avatar matched: ${avatarName}` });
+									await member.ban({ reason: `Avatar matched: ${avatarName}`, days: 7 });
 								} catch (err) {
 									this.container.logger.warn('Failed to ban member', err);
 									bannedMembers.pop();
