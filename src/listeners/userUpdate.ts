@@ -24,9 +24,6 @@ export default class PresenceUpdateListener extends Listener {
 							{ name: 'New name', value: `${user.username}`, inline: true },
 						]),
 					],
-					allowedMentions: {
-						parse: [],
-					},
 				});
 			}
 		}
