@@ -1,12 +1,31 @@
 import { Listener } from '@sapphire/framework';
-import type { User } from 'discord.js';
-import { guildId } from '../config';
+import type { GuildTextBasedChannel, User } from 'discord.js';
+import { guildId, userRenameChannelId } from '../config';
+import { createInfoEmbed } from '../lib/utils/createInfoEmbed';
 import { checkIfMemberMatchesFilter } from '../lib/utils/filters';
 
 export default class PresenceUpdateListener extends Listener {
-	public async run(_: User, user: User) {
+	public async run(oldUser: User, user: User) {
 		// If the member is a bot, return
 		if (user.bot) return;
+
+		if (oldUser.username !== user.username) {
+			const channel = this.container.client.channels.resolve(userRenameChannelId) as GuildTextBasedChannel | null;
+
+			if (channel) {
+				await channel.send({
+					embeds: [
+						createInfoEmbed(
+							this.container.client,
+							`User rename encountered for user <@${user.id}> (\`${user.id}\`)`,
+						).addFields([
+							{ name: 'Old name', value: `${oldUser.username || '<UNKNOWN OLD USERNAME>'}`, inline: true },
+							{ name: 'New name', value: `${user.username}`, inline: true },
+						]),
+					],
+				});
+			}
+		}
 
 		const guild = this.container.client.guilds.resolve(guildId)!;
 		const member = await guild.members.fetch({ user: user.id });

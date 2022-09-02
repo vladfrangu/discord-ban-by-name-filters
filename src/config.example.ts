@@ -24,3 +24,8 @@ export const guildId: Snowflake = '123';
  * The channel id to log the actions taken to the member
  */
 export const logChannelId: Snowflake = '';
+
+/**
+ * The channel id to log user renames
+ */
+export const userRenameChannelId: Snowflake = '';
