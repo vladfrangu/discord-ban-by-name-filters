@@ -14,15 +14,19 @@ export default class PresenceUpdateListener extends Listener {
 
 			if (channel) {
 				await channel.send({
+					content: `User <@${user.id}>`,
 					embeds: [
 						createInfoEmbed(
 							this.container.client,
-							`User rename encountered for user <@${user.id}> (\`${user.id}\`)`,
+							`User rename encountered for user ${user.tag} (\`${user.id}\`)`,
 						).addFields([
 							{ name: 'Old name', value: `${oldUser.username || '<UNKNOWN OLD USERNAME>'}`, inline: true },
 							{ name: 'New name', value: `${user.username}`, inline: true },
 						]),
 					],
+					allowedMentions: {
+						parse: [],
+					},
 				});
 			}
 		}
